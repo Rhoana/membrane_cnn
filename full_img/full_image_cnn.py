@@ -588,7 +588,7 @@ class ComboDeepNetwork(object):
 
             self.all_nets.append(new_network)
 
-    def apply_combo_net(self, input_image, block_size=512):
+    def apply_combo_net(self, input_image, block_size=400):
 
         average_image = np.zeros(input_image.shape, dtype=np.float32)
 
@@ -607,13 +607,19 @@ class ComboDeepNetwork(object):
                 preprocessed_image = np.pad(input_image, ((pad_by, pad_by), (pad_by, pad_by)), 'symmetric')
                 preprocessed_image = np.float32(mahotas.imresize(preprocessed_image, 1.0 / downsample))
 
-            # Compute in blocks
-            block_x = range(pad_by, preprocessed_image.shape[0] - block_size + 1, block_size)
-            block_y = range(pad_by, preprocessed_image.shape[1] - block_size + 1, block_size)
-            if preprocessed_image.shape[0] % block_size > 0:
-                block_x.append(preprocessed_image.shape[0] - block_size)
-            if preprocessed_image.shape[1] % block_size > 0:
-                block_y.append(preprocessed_image.shape[1] - block_size)
+            halo = int((pad_by + downsample - 1) / downsample)
+
+            # Compute in blocks (small edges)
+            block_x = range(halo, preprocessed_image.shape[0], block_size)
+            block_y = range(halo, preprocessed_image.shape[1], block_size)
+
+            # (full edges)
+            # block_x = range(halo, preprocessed_image.shape[0] - block_size + 1, block_size)
+            # block_y = range(halo, preprocessed_image.shape[1] - block_size + 1, block_size)
+            # if preprocessed_image.shape[0] % block_size > 0:
+            #     block_x.append(max(halo, preprocessed_image.shape[0] - block_size - halo))
+            # if preprocessed_image.shape[1] % block_size > 0:
+            #     block_y.append(max(halo, preprocessed_image.shape[1] - block_size - halo))
 
             blocki = 0
             nblocks = len(block_x) * len(block_y)
@@ -624,14 +630,14 @@ class ComboDeepNetwork(object):
                 for from_y in block_y:
 
                     # Crop out a padded input block
-                    block = preprocessed_image[from_x-pad_by:from_x+block_size+pad_by, from_y-pad_by:from_y+block_size+pad_by]
+                    block = preprocessed_image[from_x-halo:from_x+block_size+halo, from_y-halo:from_y+block_size+halo]
 
                     # Apply network
                     output_block = self.all_nets[net_i].apply_net(block, perform_downsample=False, perform_pad=False)
 
                     # Output block is not padded
-                    to_x = (from_x - pad_by) * downsample
-                    to_y = (from_y - pad_by) * downsample
+                    to_x = (from_x - halo) * downsample
+                    to_y = (from_y - halo) * downsample
                     output_image[to_x:to_x + output_block.shape[0], to_y:to_y + output_block.shape[1]] = output_block
 
                     blocki += 1

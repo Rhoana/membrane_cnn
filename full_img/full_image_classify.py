@@ -19,7 +19,7 @@ execfile('full_image_cnn.py')
 
 param_path = 'D:/dev/Rhoana/membrane_cnn/results/PC/'
 #param_file = param_path + 'LGN1_MembraneSamples_65x65x1_mp0.50_train10000_valid2000_test2000_seed7.progress_anneal_rotmir_k[32, 32, 32, 32].h5.'
-param_file = param_path + 'LGN1_MembraneSamples_31x31x1_mp0.50_train50000_valid5000_test5000_seed7_ds4b.progress_anneal_rotmir_k[32, 32, 32]_baseLR0.002.h5'
+param_file = param_path + 'LGN1_MembraneSamples_31x31x1_mp0.50_train50000_valid5000_test5000_seed7_ds4b.progress_anneal_rotmir_k[32, 32, 32]_baseLR0.003_v3.h5'
 #param_file = param_path + 'lenet0_membrane_epoch_25100.h5'
 #param_file = param_path + '5layer_params_large_epoch_285.h5'
 
