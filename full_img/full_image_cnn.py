@@ -6,6 +6,9 @@ from scipy.signal import convolve2d
 from scipy.signal import fftconvolve
 from numpy.fft import rfftn
 from numpy.fft import irfftn
+import mahotas
+import time
+import h5py
 
 VALID_SIZE_CROP = False
 
