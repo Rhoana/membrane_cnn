@@ -4,13 +4,15 @@ import numpy as np
 import scipy.ndimage
 from scipy.signal import convolve2d
 from scipy.signal import fftconvolve
+from numpy.fft import rfftn
+from numpy.fft import irfftn
 
 VALID_SIZE_CROP = False
 
 def _centered(arr, newsize):
     # Return the center newsize portion of the array.
-    newsize = asarray(newsize)
-    currsize = array(arr.shape)
+    newsize = np.asarray(newsize)
+    currsize = np.array(arr.shape)
     startind = (currsize - newsize) // 2
     endind = startind + newsize
     myslice = [slice(startind[k], endind[k]) for k in range(len(endind))]
@@ -613,6 +615,8 @@ class ComboDeepNetwork(object):
             blocki = 0
             nblocks = len(block_x) * len(block_y)
 
+            output_image = np.zeros(input_image.shape, dtype=np.float32)
+
             for from_x in block_x:
                 for from_y in block_y:
 
@@ -625,12 +629,14 @@ class ComboDeepNetwork(object):
                     # Output block is not padded
                     to_x = (from_x - pad_by) * downsample
                     to_y = (from_y - pad_by) * downsample
-                    average_image[to_x:to_x + block_size * downsample, to_y:to_y + block_size * downsample] += output_block
+                    output_image[to_x:to_x + output_block.shape[0], to_y:to_y + output_block.shape[1]] = output_block
 
                     blocki += 1
                     print 'Block {0} of {1} complete.'.format(blocki, nblocks)
 
-            print 'Net {0} of {1} complete.'.format(net_i, self.nnets)
+            average_image += output_image
+
+            print 'Net {0} of {1} complete.'.format(net_i + 1, self.nnets)
 
         average_image /= self.nnets
 

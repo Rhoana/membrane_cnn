@@ -9,20 +9,14 @@ import mahotas
 import glob
 import h5py
 
-execfile('full_image_cnn.py')
-#from full_image_cnn import *
+#execfile('full_image_cnn.py')
+from full_image_cnn import *
 
 input_image_path = sys.argv[1]
 combo_net_path = sys.argv[2]
 output_image_path = sys.argv[3]
 
 combo_net = ComboDeepNetwork(combo_net_path)
-
-#image_path='D:/dev/datasets/isbi/train-input/train-input_0000.tif'
-#gold_image_path='D:/dev/datasets/isbi/train-labels/train-labels_0000.tif'
-
-image_path_format_string='D:/dev/datasets/LGN1/gold/images/2kSampAligned{0:04d}.tif'
-gold_image_path_format_string='D:/dev/datasets/LGN1/gold/lxVastExport_8+12+13/Segmentation1-LX_8-12_export_s{0:03d}.png'
 
 def normalize_image(original_image, saturation_level=0.005):
     sorted_image = np.sort( np.uint8(original_image).ravel() )
