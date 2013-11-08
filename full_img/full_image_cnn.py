@@ -624,7 +624,7 @@ class ComboDeepNetwork(object):
                     block = preprocessed_image[from_x-pad_by:from_x+block_size+pad_by, from_y-pad_by:from_y+block_size+pad_by]
 
                     # Apply network
-                    output_block = self.all_nets[net_i].apply_net(preprocessed_image, perform_downsample=False, perform_pad=False)
+                    output_block = self.all_nets[net_i].apply_net(block, perform_downsample=False, perform_pad=False)
 
                     # Output block is not padded
                     to_x = (from_x - pad_by) * downsample
