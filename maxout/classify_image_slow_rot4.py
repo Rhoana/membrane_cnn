@@ -61,11 +61,11 @@ for rotate in range(4):
     if rotate == 0:
         rotate_input = pad_image
     elif rotate == 1:
-        rotate_input = pad_image[::-1,:].dimshuffle(1,0)
+        rotate_input = pad_image[::-1,:].T
     elif rotate == 2:
         rotate_input = pad_image[::-1,:][:,::-1]
     else:
-        rotate_input = pad_image.dimshuffle(1,0)[::-1,:]
+        rotate_input = pad_image.T[::-1,:]
 
     for xi in range(nx):
         for yi in range(ny):
@@ -89,11 +89,11 @@ for rotate in range(4):
     if rotate == 0:
         output_image += y.reshape(input_image.shape)
     elif rotate == 1:
-        output_image += y.reshape(input_image.shape).dimshuffle(1,0)[::-1,:]
+        output_image += y.reshape(input_image.shape).T[::-1,:]
     elif rotate == 2:
         output_image += y.reshape(input_image.shape)[::-1,:][:,::-1]
     else:
-        output_image += y.reshape(input_image.shape)[::-1,:].dimshuffle(1,0)
+        output_image += y.reshape(input_image.shape)[::-1,:].T
 
 output_image = output_image / 4.0
 
