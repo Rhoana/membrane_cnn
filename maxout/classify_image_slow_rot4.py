@@ -49,10 +49,6 @@ X = np.zeros((1, input_shape[0], input_shape[1], batch_size), dtype=np.float32)
 y = np.zeros(nx * ny, dtype=np.float32)
 output_image = np.zeros((nx, ny), dtype=np.float32)
 
-batch_count = 0
-batch_start = 0
-batchi = 0
-
 assert isinstance(X.shape[0], (int, long))
 assert isinstance(batch_size, py_integer_types)
 
@@ -67,10 +63,14 @@ for rotate in range(4):
     else:
         rotate_input = pad_image.T[::-1,:]
 
+    batch_count = 0
+    batch_start = 0
+    batchi = 0
+
     for xi in range(nx):
         for yi in range(ny):
 
-            X[0, :, :, batchi] = pad_image[xi : xi + input_shape[0], yi : yi + input_shape[1]]
+            X[0, :, :, batchi] = rotate_input[xi : xi + input_shape[0], yi : yi + input_shape[1]]
 
             batchi += 1
 
@@ -87,13 +87,13 @@ for rotate in range(4):
         y[batch_start:batch_start + batchi] = batch_predict(X)[0][:batchi,0]
 
     if rotate == 0:
-        output_image += y.reshape(input_image.shape)
+        output_image += y.reshape((nx, ny))
     elif rotate == 1:
-        output_image += y.reshape(input_image.shape).T[::-1,:]
+        output_image += y.reshape((ny, nx)).T[::-1,:]
     elif rotate == 2:
-        output_image += y.reshape(input_image.shape)[::-1,:][:,::-1]
+        output_image += y.reshape((nx, ny))[::-1,:][:,::-1]
     else:
-        output_image += y.reshape(input_image.shape)[::-1,:].T
+        output_image += y.reshape((ny, nx))[::-1,:].T
 
 output_image = output_image / 4.0
 
