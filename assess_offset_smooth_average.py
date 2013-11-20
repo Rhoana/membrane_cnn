@@ -8,7 +8,9 @@ import glob
 import os
 import h5py
 
-param_path = 'D:/dev/Rhoana/membrane_cnn/results/good3/'
+#param_path = 'D:/dev/Rhoana/membrane_cnn/results/good3/'
+#param_path = 'D:/dev/Rhoana/membrane_cnn/results/stumpin/'
+param_path = 'D:/dev/Rhoana/membrane_cnn/results/stump_combo/'
 param_files = glob.glob(param_path + "*.h5")
 
 target_boundaries = mahotas.imread(param_path + 'boundaries.png') > 0
@@ -23,6 +25,7 @@ for remove_i in range(len(param_files)+1):
 
     param_files_removed = list(param_files)
     if remove_i < len(param_files_removed):
+        print 'removing  {0}'.format(param_files_removed[remove_i])
         del param_files_removed[remove_i]
 
     average_result = np.zeros(target_boundaries.shape, dtype=np.float32)
@@ -33,9 +36,10 @@ for remove_i in range(len(param_files)+1):
         if param_file.find('.ot.h5') != -1:
             continue
 
-        print param_file
+        #print param_file
 
-        net_output_file = param_file.replace('.h5','\\0005_classify_output_layer6_0.tif')
+        #net_output_file = param_file.replace('.h5','\\0005_classify_output_layer6_0.tif')
+        net_output_file = param_file.replace('.h5','\\0100_classify_output_layer6_0.tif')
         net_output = mahotas.imread(net_output_file)
         net_output = np.float32(net_output) / np.max(net_output)
 
@@ -65,11 +69,11 @@ for remove_i in range(len(param_files)+1):
     best_thresh = 0
     best_result = None
 
-    for smooth_sigma in arange(0, 3, 0.1):
+    for smooth_sigma in arange(0, 0.5, 0.2):
 
         smooth_output = scipy.ndimage.filters.gaussian_filter(average_result, smooth_sigma)
 
-        for thresh in arange(0.1,1,0.1):
+        for thresh in arange(0.1,0.8,0.1):
             result = smooth_output > thresh
 
             if np.sum(result) == 0:
@@ -88,8 +92,9 @@ for remove_i in range(len(param_files)+1):
                 best_score = Fscore
                 best_thresh = thresh
                 best_result = result
+                best_sigma = smooth_sigma
 
-    print 'Best average score of {0} for sigma {1}, thresh {2}.'.format(best_score, best_sigma, best_thresh)
+    print 'Best (highest) F-score of {0} for sigma {1}, thresh {2}.'.format(best_score, best_sigma, best_thresh)
 
     # figsize(20,20);
     # imshow(average_result,cmap=cm.gray)

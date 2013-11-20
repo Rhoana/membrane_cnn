@@ -471,12 +471,13 @@ class LogisticRegressionLayer(object):
         return error_in
 
 class DeepNetwork(object):
-    def __init__(self, all_layers, best_offset, best_sigma, downsample, pad_by):
+    def __init__(self, all_layers, best_offset, best_sigma, downsample, pad_by, stumpin=False):
         self.all_layers = all_layers
         self.best_offset = best_offset
         self.best_sigma = best_sigma
         self.downsample = downsample
         self.pad_by = pad_by
+        self.stumpin = stumpin
 
         assert np.max(np.abs(self.best_offset)) <= self.pad_by
 
@@ -527,8 +528,10 @@ class ComboDeepNetwork(object):
             best_sigma = float(combo_h5[net_string + '/best_sigma'][...])
             downsample = float(combo_h5[net_string + '/downsample_factor'][...])
             nlayers = int(combo_h5[net_string + '/layers'][...])
+            stumpin = net_string + '/stumpin' in combo_h5
 
             print 'Network {0} has {1} layers.'.format(net_i, nlayers)
+            #print stumpin
 
             all_layers = []
             stride_in = 1
@@ -584,13 +587,15 @@ class ComboDeepNetwork(object):
 
             pad_by = int(downsample * (footprint // 2))
 
-            new_network = DeepNetwork(all_layers, best_offset, best_sigma, downsample, pad_by)
+            new_network = DeepNetwork(all_layers, best_offset, best_sigma, downsample, pad_by, stumpin)
 
             self.all_nets.append(new_network)
 
-    def apply_combo_net(self, input_image, block_size=400):
+    def apply_combo_net(self, input_image, block_size=400, stump_input=None, return_parts=False):
 
         average_image = np.zeros(input_image.shape, dtype=np.float32)
+
+        parts = []
 
         prev_downsample = 0
         prev_pad_by = 0
@@ -599,12 +604,14 @@ class ComboDeepNetwork(object):
 
         for net_i in range(self.nnets):
 
+            net_input = stump_input if self.all_nets[net_i].stumpin else input_image
+
             downsample = self.all_nets[net_i].downsample
             pad_by = self.all_nets[net_i].pad_by
 
             # Downsample and pad
             if prev_downsample != downsample or prev_pad_by != pad_by:
-                preprocessed_image = np.pad(input_image, ((pad_by, pad_by), (pad_by, pad_by)), 'symmetric')
+                preprocessed_image = np.pad(net_input, ((pad_by, pad_by), (pad_by, pad_by)), 'symmetric')
                 preprocessed_image = np.float32(mahotas.imresize(preprocessed_image, 1.0 / downsample))
 
             halo = int((pad_by + downsample - 1) / downsample)
@@ -645,6 +652,9 @@ class ComboDeepNetwork(object):
 
             average_image += output_image
 
+            if return_parts:
+                parts.append(output_image)
+
             print 'Net {0} of {1} complete.'.format(net_i + 1, self.nnets)
 
         average_image /= self.nnets
@@ -654,4 +664,4 @@ class ComboDeepNetwork(object):
         print('Classification complete.')
         print('Classification code ran for %.2fm' % ((end_time - start_time) / 60.))
 
-        return average_image
+        return (average_image, parts) if return_parts else average_image

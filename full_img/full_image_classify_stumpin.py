@@ -25,13 +25,13 @@ execfile('full_image_cnn.py')
 
 #param_files = [param_file]
 
-param_path = 'D:/dev/Rhoana/membrane_cnn/results/good3/'
+param_path = 'D:/dev/Rhoana/membrane_cnn/results/stumpin/'
 param_files = glob.glob(param_path + "*.h5")
 param_files = [x for x in param_files if x.find('.ot.h5') == -1]
 
 for param_file in param_files:
 
-    output_path = param_file.replace('.h5', '')
+    output_path = param_file.replace('.h5', '_stumpin')
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
@@ -106,7 +106,7 @@ for param_file in param_files:
     #image_path='D:/dev/datasets/isbi/train-input/train-input_0000.tif'
     #gold_image_path='D:/dev/datasets/isbi/train-labels/train-labels_0000.tif'
 
-    image_path_format_string='D:/dev/datasets/LGN1/gold/images/2kSampAligned{0:04d}.tif'
+    image_path_format_string='D:/dev/datasets/LGN1/JoshProbabilities/2kSampAligned{0:04d}.tif'
     gold_image_path_format_string='D:/dev/datasets/LGN1/gold/lxVastExport_8+12+13/Segmentation1-LX_8-12_export_s{0:03d}.png'
 
     saturation_level = 0.005

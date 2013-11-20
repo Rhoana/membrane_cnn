@@ -10,7 +10,8 @@ import h5py
 import partition_comparison
 from datetime import date
 
-param_path = 'D:/dev/Rhoana/membrane_cnn/results/good3/'
+#param_path = 'D:/dev/Rhoana/membrane_cnn/results/good3/'
+param_path = 'D:/dev/Rhoana/membrane_cnn/results/stump_combo/'
 param_files = glob.glob(param_path + "*.h5")
 
 param_files = [x for x in param_files if x.find('.ot.h5') == -1]
@@ -52,6 +53,9 @@ for i, param_file in enumerate(param_files):
         downsample = 4
 
     combo_output_h5[net_string + '/downsample_factor'] = downsample
+
+    if param_file.find('Stump') != -1:
+        combo_output_h5[net_string + '/stumpin'] = True
 
     print 'Network {0} has {1} layers.'.format(i, nlayers)
 

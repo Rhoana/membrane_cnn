@@ -9,7 +9,8 @@ import os
 import h5py
 import partition_comparison
 
-param_path = 'D:/dev/Rhoana/membrane_cnn/results/good3/'
+#param_path = 'D:/dev/Rhoana/membrane_cnn/results/good3/'
+param_path = 'D:/dev/Rhoana/membrane_cnn/results/stumpin/'
 param_files = glob.glob(param_path + "*.h5")
 
 target_boundaries = mahotas.imread(param_path + 'boundaries.png') > 0
@@ -35,7 +36,8 @@ for param_file in param_files:
 
     print param_file
 
-    net_output_file = param_file.replace('.h5','\\0005_classify_output_layer6_0.tif')
+    #net_output_file = param_file.replace('.h5','\\0005_classify_output_layer6_0.tif')
+    net_output_file = param_file.replace('.h5','\\0100_classify_output_layer6_0.tif')
     net_output = mahotas.imread(net_output_file)
     net_output = np.float32(net_output) / np.max(net_output)
 
