@@ -67,8 +67,8 @@ for rotate in range(4):
     batch_start = 0
     batchi = 0
 
-    for xi in range(nx):
-        for yi in range(ny):
+    for xi in range(nx if rotate in [0,2] else ny):
+        for yi in range(ny if rotate in [0,2] else nx):
 
             X[0, :, :, batchi] = rotate_input[xi : xi + input_shape[0], yi : yi + input_shape[1]]
 
