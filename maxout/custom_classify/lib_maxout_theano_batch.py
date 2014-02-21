@@ -79,6 +79,17 @@ class DeepNetwork(object):
         else:
             self.downsample = 1
 
+        # Calculate network footprint and therefore layer0_size
+        footprint = 1
+        for layer in range(self.nlayers-1, -1, -1):
+            layer_string = '/layer{0}/'.format(layer_i)
+            if layer == self.nlayers - 1:
+                footprint = network_h5[layer_string + 'ksize'][...][0]
+            else:
+                footprint = footprint * network_h5[layer_string + 'pool_shape'][...][0] - 1 + network_h5[layer_string + 'kernel_shape'][...][0]
+
+        self.layer0_size = footprint
+
         self.best_sigma = 0
         self.best_offset = (0,0)
 
@@ -88,7 +99,6 @@ class DeepNetwork(object):
         self.y = T.ivector('y')  # the labels are presented as 1D vector of
 
         self.layer0_channels = 1
-        self.layer0_size = 49
 
         layer0_input = self.x.reshape((self.batch_size, 1, self.layer0_size, self.layer0_size))
 
