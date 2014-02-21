@@ -3,6 +3,7 @@ import sys
 import numpy as np
 import Image
 import glob
+import h5py
 
 #from lib_maxout_gpu import *
 #from lib_maxout_python import *
@@ -38,9 +39,11 @@ network = DeepNetwork(model_path, batch_size=batch_size)
 for img_i, img_in in enumerate(img_files):
 
     probs_out = os.path.join(img_out_path, 'probs_{0}.hdf5'.format(img_i))
-    if (os.path.exists(output_file)):
-        print "Output file {0} already exists.".format(output_file)
+    if (os.path.exists(probs_out)):
+        print "Output file {0} already exists.".format(probs_out)
         continue
+
+    out_hdf5 = h5py.File(probs_out, 'w')
 
     input_image = normalize_image_float(np.array(Image.open(img_in)))
     nx, ny = input_image.shape
@@ -59,9 +62,6 @@ for img_i, img_in in enumerate(img_files):
 
     # print "Image saved."
 
-    import h5py
-    f = h5py.File(probs_out)
-    f['/probabilities'] = output
-    f.close()
-
-    print "Probabilities saved."
+    out_hdf5.create_dataset('probabilities', data = output, chunks = (64,64), compression = 'gzip')
+    out_hdf5.close()
+    print "Probabilities saved to: {0}".format(probs_out)
