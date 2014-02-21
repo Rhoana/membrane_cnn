@@ -65,3 +65,6 @@ for img_i, img_in in enumerate(img_files):
     out_hdf5.create_dataset('probabilities', data = output, chunks = (64,64), compression = 'gzip')
     out_hdf5.close()
     print "Probabilities saved to: {0}".format(probs_out)
+
+    # Just process one image
+    break
