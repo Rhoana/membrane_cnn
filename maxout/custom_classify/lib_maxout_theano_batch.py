@@ -81,9 +81,9 @@ class DeepNetwork(object):
 
         # Calculate network footprint and therefore layer0_size
         footprint = 1
-        for layer in range(self.nlayers-1, -1, -1):
+        for layer_i in range(self.nlayers-1, -1, -1):
             layer_string = '/layer{0}/'.format(layer_i)
-            if layer == self.nlayers - 1:
+            if layer_i == self.nlayers - 1:
                 footprint = network_h5[layer_string + 'ksize'][...][0]
             else:
                 footprint = footprint * network_h5[layer_string + 'pool_shape'][...][0] - 1 + network_h5[layer_string + 'kernel_shape'][...][0]
