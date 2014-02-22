@@ -56,11 +56,11 @@ for img_i, img_in in enumerate(img_files):
         if quater == 0:
             pad_image = pad_image[0:nx//2 + pad_by*2, 0:ny//2 + pad_by*2]
         elif quater == 1:
-            pad_image = pad_image[nx//2 + pad_by:, 0:ny//2 + pad_by*2]
+            pad_image = pad_image[nx//2:, 0:ny//2 + pad_by*2]
         elif quater == 2:
-            pad_image = pad_image[0:nx//2 + pad_by*2, ny//2 + pad_by:]
+            pad_image = pad_image[0:nx//2 + pad_by*2, ny//2:]
         elif quater == 3:
-            pad_image = pad_image[nx//2 + pad_by:, ny//2 + pad_by:]
+            pad_image = pad_image[nx//2:, ny//2:]
 
         start_time = time.time()
 
